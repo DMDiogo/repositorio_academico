@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,24 +20,32 @@ Route::get('/publicacoes/{id}', function ($id) {
 });
 
 // Rotas de autenticação
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Placeholder para o perfil
-Route::get('/profile', function () {
-    return view('profile.edit');
-})->name('profile.edit');
-
-// Placeholder para logout
-Route::post('/logout', function () {
-    return redirect('/');
-})->name('logout');
+// Rotas protegidas (requerem autenticação)
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+    
+    // Perfil do usuário
+    Route::get('/profile', function () {
+        return view('profile.edit');
+    })->name('profile.edit');
+    
+    // Rota para atualizar perfil (placeholder)
+    Route::patch('/profile', function () {
+        return redirect()->back()->with('status', 'profile-updated');
+    })->name('profile.update');
+    
+    // Rota para atualizar senha (placeholder)
+    Route::put('/password', function () {
+        return redirect()->back()->with('status', 'password-updated');
+    })->name('password.update');
+});
