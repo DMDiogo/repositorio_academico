@@ -16,39 +16,35 @@ class PublicationTypeSeeder extends Seeder
         $types = [
             [
                 'name' => 'Artigo Científico',
-                'description' => 'Trabalho acadêmico que apresenta resultados de uma pesquisa científica específica.',
+                'description' => 'Trabalho acadêmico que apresenta resultados de pesquisa científica.',
             ],
             [
                 'name' => 'Tese',
-                'description' => 'Trabalho acadêmico apresentado como requisito para obtenção do título de doutor.',
+                'description' => 'Trabalho acadêmico de conclusão de doutorado.',
             ],
             [
                 'name' => 'Dissertação',
-                'description' => 'Trabalho acadêmico apresentado como requisito para obtenção do título de mestre.',
+                'description' => 'Trabalho acadêmico de conclusão de mestrado.',
             ],
             [
                 'name' => 'Monografia',
-                'description' => 'Trabalho acadêmico de conclusão de curso de graduação ou especialização.',
+                'description' => 'Trabalho acadêmico de conclusão de curso de graduação.',
             ],
             [
                 'name' => 'Livro',
-                'description' => 'Obra acadêmica ou literária completa.',
+                'description' => 'Obra completa sobre um tema específico.',
             ],
             [
                 'name' => 'Capítulo de Livro',
-                'description' => 'Parte específica de uma obra acadêmica ou literária.',
+                'description' => 'Parte de uma obra coletiva sobre um tema específico.',
             ],
             [
-                'name' => 'Trabalho de Conclusão de Curso',
-                'description' => 'Trabalho final apresentado para conclusão de curso de graduação.',
+                'name' => 'Resumo Expandido',
+                'description' => 'Versão resumida de um trabalho científico para apresentação em eventos.',
             ],
             [
                 'name' => 'Relatório Técnico',
-                'description' => 'Documento que descreve detalhes técnicos de um projeto ou pesquisa aplicada.',
-            ],
-            [
-                'name' => 'Anais de Congresso',
-                'description' => 'Publicação contendo os trabalhos apresentados em congressos ou eventos científicos.',
+                'description' => 'Documento que descreve resultados de pesquisa ou desenvolvimento técnico.',
             ],
         ];
 

@@ -26,35 +26,31 @@
                 <label for="area" class="block text-sm font-medium text-gray-700 mb-1">Área de Conhecimento</label>
                 <select id="area" name="area" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
                     <option value="">Todas as áreas</option>
-                    <option value="exatas">Ciências Exatas</option>
-                    <option value="biologicas">Ciências Biológicas</option>
-                    <option value="humanas">Ciências Humanas</option>
-                    <option value="sociais">Ciências Sociais Aplicadas</option>
-                    <option value="engenharias">Engenharias</option>
-                    <option value="linguistica">Linguística, Letras e Artes</option>
+                    @foreach($knowledgeAreas as $area)
+                        <option value="{{ $area->id }}">{{ $area->name }}</option>
+                    @endforeach
                 </select>
             </div>
             <div>
                 <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Publicação</label>
                 <select id="tipo" name="tipo" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
                     <option value="">Todos os tipos</option>
-                    <option value="artigo">Artigo Científico</option>
-                    <option value="tese">Tese</option>
-                    <option value="dissertacao">Dissertação</option>
-                    <option value="monografia">Monografia</option>
-                    <option value="livro">Livro</option>
+                    @foreach($publicationTypes as $type)
+                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                    @endforeach
                 </select>
             </div>
             <div>
                 <label for="ano" class="block text-sm font-medium text-gray-700 mb-1">Ano de Publicação</label>
                 <select id="ano" name="ano" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
                     <option value="">Todos os anos</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                    <option value="anterior">Anterior a 2019</option>
+                    @php
+                        $currentYear = date('Y');
+                        for($i = $currentYear; $i >= $currentYear - 5; $i--) {
+                            echo "<option value=\"$i\">$i</option>";
+                        }
+                    @endphp
+                    <option value="anterior">Anterior a {{ $currentYear - 5 }}</option>
                 </select>
             </div>
             <div>
@@ -76,7 +72,7 @@
 
     <!-- Lista de Publicações -->
     <div class="grid grid-cols-1 gap-6">
-        <!-- Publicação 1 -->
+        @foreach($publications as $publication)
         <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
             <div class="p-6">
                 <div class="flex flex-col lg:flex-row">
@@ -90,34 +86,34 @@
                     <div class="flex-1">
                         <div class="flex items-center space-x-3 mb-2">
                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                Engenharia
+                                {{ $publication->knowledgeArea->name }}
                             </span>
                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                Artigo Científico
+                                {{ $publication->publicationType->name }}
                             </span>
-                            <span class="text-sm text-gray-500">Junho 2023</span>
+                            <span class="text-sm text-gray-500">{{ $publication->publication_date->format('F Y') }}</span>
                         </div>
-                        <a href="{{ url('/publicacoes/1') }}" class="block">
+                        <a href="{{ route('publications.show', $publication) }}" class="block">
                             <h3 class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">
-                                Avanços em Inteligência Artificial: aplicações na indústria 4.0
+                                {{ $publication->title }}
                             </h3>
                             <p class="mt-3 text-gray-500">
-                                Este artigo discute as aplicações mais recentes de algoritmos de inteligência artificial no contexto da indústria 4.0, com foco em automação e otimização de processos industriais.
+                                {{ Str::limit($publication->abstract, 200) }}
                             </p>
                         </a>
                         <div class="mt-4 flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/42.jpg" alt="">
+                                    <img class="h-10 w-10 rounded-full" src="{{ $publication->user->profile_photo_url }}" alt="{{ $publication->user->name }}">
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm font-medium text-gray-900">
-                                        Dr. Carlos Silva
+                                        {{ $publication->user->name }}
                                     </p>
                                     <div class="flex space-x-1 text-sm text-gray-500">
-                                        <span>32 páginas</span>
+                                        <span>{{ $publication->page_count }} páginas</span>
                                         <span aria-hidden="true">&middot;</span>
-                                        <span>PDF (2.4 MB)</span>
+                                        <span>{{ strtoupper($publication->file_type) }} ({{ number_format($publication->file_size / 1024, 1) }} MB)</span>
                                     </div>
                                 </div>
                             </div>
@@ -126,9 +122,9 @@
                                     <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
-                                    187 downloads
+                                    {{ $publication->download_count }} downloads
                                 </span>
-                                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <a href="{{ route('publications.download', $publication) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     Baixar
                                 </a>
                             </div>
@@ -137,232 +133,12 @@
                 </div>
             </div>
         </div>
-
-        <!-- Publicação 2 -->
-        <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
-            <div class="p-6">
-                <div class="flex flex-col lg:flex-row">
-                    <div class="flex-shrink-0 mr-6 mb-4 lg:mb-0">
-                        <div class="w-24 h-32 bg-gray-200 rounded-md border border-gray-300 flex items-center justify-center text-gray-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                Biologia
-                            </span>
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                Dissertação
-                            </span>
-                            <span class="text-sm text-gray-500">Maio 2023</span>
-                        </div>
-                        <a href="{{ url('/publicacoes/2') }}" class="block">
-                            <h3 class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">
-                                Biodiversidade em ecossistemas marinhos tropicais: um estudo comparativo
-                            </h3>
-                            <p class="mt-3 text-gray-500">
-                                Pesquisa sobre a diversidade biológica em diferentes ecossistemas marinhos tropicais, analisando padrões de distribuição e fatores que afetam a biodiversidade.
-                            </p>
-                        </a>
-                        <div class="mt-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/28.jpg" alt="">
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">
-                                        Dra. Ana Oliveira
-                                    </p>
-                                    <div class="flex space-x-1 text-sm text-gray-500">
-                                        <span>45 páginas</span>
-                                        <span aria-hidden="true">&middot;</span>
-                                        <span>PDF (3.8 MB)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-500 flex items-center">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    246 downloads
-                                </span>
-                                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Baixar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Publicação 3 -->
-        <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
-            <div class="p-6">
-                <div class="flex flex-col lg:flex-row">
-                    <div class="flex-shrink-0 mr-6 mb-4 lg:mb-0">
-                        <div class="w-24 h-32 bg-gray-200 rounded-md border border-gray-300 flex items-center justify-center text-gray-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                                Filosofia
-                            </span>
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                Artigo Científico
-                            </span>
-                            <span class="text-sm text-gray-500">Abril 2023</span>
-                        </div>
-                        <a href="#" class="block">
-                            <h3 class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">
-                                Ética na era da inteligência artificial: dilemas contemporâneos
-                            </h3>
-                            <p class="mt-3 text-gray-500">
-                                Uma análise filosófica sobre questões éticas surgidas com o avanço da inteligência artificial, abordando temas como privacidade, autonomia e responsabilidade.
-                            </p>
-                        </a>
-                        <div class="mt-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/35.jpg" alt="">
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">
-                                        Prof. Ricardo Mendes
-                                    </p>
-                                    <div class="flex space-x-1 text-sm text-gray-500">
-                                        <span>28 páginas</span>
-                                        <span aria-hidden="true">&middot;</span>
-                                        <span>PDF (1.7 MB)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-500 flex items-center">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    124 downloads
-                                </span>
-                                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Baixar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Publicação 4 -->
-        <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
-            <div class="p-6">
-                <div class="flex flex-col lg:flex-row">
-                    <div class="flex-shrink-0 mr-6 mb-4 lg:mb-0">
-                        <div class="w-24 h-32 bg-gray-200 rounded-md border border-gray-300 flex items-center justify-center text-gray-500">
-                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                                Economia
-                            </span>
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                Tese
-                            </span>
-                            <span class="text-sm text-gray-500">Março 2023</span>
-                        </div>
-                        <a href="#" class="block">
-                            <h3 class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">
-                                Impactos econômicos da transição energética: desafios e oportunidades para economias emergentes
-                            </h3>
-                            <p class="mt-3 text-gray-500">
-                                Análise dos desafios e oportunidades econômicas enfrentados por países em desenvolvimento durante a transição para fontes de energia renovável, considerando aspectos como investimentos, empregos e competitividade internacional.
-                            </p>
-                        </a>
-                        <div class="mt-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/42.jpg" alt="">
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">
-                                        Dra. Juliana Santos
-                                    </p>
-                                    <div class="flex space-x-1 text-sm text-gray-500">
-                                        <span>112 páginas</span>
-                                        <span aria-hidden="true">&middot;</span>
-                                        <span>PDF (5.2 MB)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-500 flex items-center">
-                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    98 downloads
-                                </span>
-                                <a href="#" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Baixar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     <!-- Paginação -->
     <div class="mt-8 flex justify-center">
-        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Paginação">
-            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                <span class="sr-only">Anterior</span>
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-            </a>
-            <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                1
-            </a>
-            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                2
-            </a>
-            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                3
-            </a>
-            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                ...
-            </span>
-            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                8
-            </a>
-            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                9
-            </a>
-            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                10
-            </a>
-            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                <span class="sr-only">Próxima</span>
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                </svg>
-            </a>
-        </nav>
+        {{ $publications->links() }}
     </div>
-
 </div>
 @endsection 

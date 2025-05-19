@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->string('color_class')->nullable()->comment('CSS color class for UI display');
+            $table->string('icon_path')->nullable();
+            $table->integer('publication_count')->default(0)->comment('Cache for publication count');
             $table->timestamps();
         });
     }

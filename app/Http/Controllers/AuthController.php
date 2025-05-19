@@ -58,10 +58,13 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::min(8)],
+            'user_type' => ['required', 'string', 'in:student,teacher'],
             'terms' => ['required', 'accepted'],
         ], [
             'terms.required' => 'Você deve aceitar os Termos de Serviço e Política de Privacidade.',
             'terms.accepted' => 'Você deve aceitar os Termos de Serviço e Política de Privacidade.',
+            'user_type.required' => 'Você deve selecionar um tipo de usuário.',
+            'user_type.in' => 'O tipo de usuário selecionado é inválido.',
         ]);
 
         if ($validator->fails()) {
@@ -72,6 +75,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'user_type' => $request->user_type,
         ]);
 
         // Criar perfil de usuário vazio

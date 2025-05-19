@@ -24,7 +24,13 @@ return new class extends Migration
             $table->string('file_path');
             $table->string('file_type');
             $table->integer('file_size')->comment('Size in KB');
+            $table->string('language')->default('pt-BR');
+            $table->string('doi')->nullable()->comment('Digital Object Identifier');
+            $table->string('issn')->nullable();
             $table->integer('download_count')->default(0);
+            $table->integer('view_count')->default(0);
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_published')->default(true);
             $table->timestamps();
         });
     }

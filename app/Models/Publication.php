@@ -7,29 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Publication extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Os atributos que são atribuíveis em massa.
      *
      * @var array<int, string>
      */
     protected $fillable = [
         'user_id',
-        'knowledge_area_id',
-        'publication_type_id',
         'title',
-        'slug',
         'abstract',
-        'publication_date',
-        'page_count',
+        'keywords',
         'file_path',
-        'file_type',
-        'file_size',
-        'download_count',
+        'file_name',
+        'type',
+        'area',
+        'language',
+        'issn',
+        'doi',
+        'status',
     ];
 
     /**
@@ -89,5 +90,29 @@ class Publication extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Obtém o autor da publicação.
+     */
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Obtém as palavras-chave como array.
+     */
+    public function getKeywordsArrayAttribute(): array
+    {
+        return array_map('trim', explode(',', $this->keywords));
+    }
+
+    /**
+     * Obtém o URL do arquivo.
+     */
+    public function getFileUrlAttribute(): string
+    {
+        return Storage::url($this->file_path);
     }
 }

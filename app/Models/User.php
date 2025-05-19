@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'user_type',
         'password',
     ];
 
@@ -61,5 +62,29 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->email === 'admin@repositorio.com';
+    }
+
+    /**
+     * Verifica se o usuário é um professor
+     */
+    public function isTeacher(): bool
+    {
+        return $this->user_type === 'teacher';
+    }
+
+    /**
+     * Verifica se o usuário é um aluno
+     */
+    public function isStudent(): bool
+    {
+        return $this->user_type === 'student';
+    }
+
+    /**
+     * Get the publications for the user.
+     */
+    public function publications()
+    {
+        return $this->hasMany(Publication::class);
     }
 }
