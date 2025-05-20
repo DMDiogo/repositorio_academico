@@ -22,15 +22,17 @@ class Publication extends Model
         'user_id',
         'title',
         'abstract',
-        'keywords',
+        'publication_date',
+        'knowledge_area_id',
+        'publication_type_id',
         'file_path',
-        'file_name',
-        'type',
-        'area',
+        'file_type',
+        'file_size',
+        'page_count',
         'language',
-        'issn',
         'doi',
-        'status',
+        'issn',
+        'download_count'
     ];
 
     /**
@@ -40,6 +42,10 @@ class Publication extends Model
      */
     protected $casts = [
         'publication_date' => 'date',
+    ];
+
+    protected $dates = [
+        'publication_date'
     ];
 
     /**
@@ -114,5 +120,21 @@ class Publication extends Model
     public function getFileUrlAttribute(): string
     {
         return Storage::url($this->file_path);
+    }
+
+    /**
+     * Get the publication's download records.
+     */
+    public function downloads(): HasMany
+    {
+        return $this->hasMany(Download::class);
+    }
+
+    /**
+     * Get total downloads count
+     */
+    public function getTotalDownloadsAttribute(): int
+    {
+        return $this->download_count ?? 0;
     }
 }

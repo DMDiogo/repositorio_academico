@@ -7,7 +7,7 @@
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-medium text-gray-900">Perfil</h2>
+                        <h2 class="text-lg font-medium text-gray-900">Painel Administrativo</h2>
                         <p class="mt-1 text-sm text-gray-600">
                             Olá {{ Auth::user()->name }}, bem-vindo ao seu painel do Repositório Acadêmico.
                         </p>
@@ -32,7 +32,7 @@
                             <span class="mt-1 block text-sm text-gray-500">Adicione um novo artigo, tese ou livro</span>
                         </a>
 
-                        <a href="{{ route('publications.index') }}" class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <a href="{{ route('publications.my-publications') }}" class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
@@ -100,7 +100,7 @@
                                         </dt>
                                         <dd class="flex items-baseline">
                                             <div class="text-2xl font-semibold text-gray-900">
-                                                0
+                                                {{ $totalDownloads }}
                                             </div>
                                         </dd>
                                     </dl>
@@ -152,6 +152,8 @@
                     </div>
                 </div>
                 
+                <!-- Removendo a seção duplicada de downloads e publicação mais baixada -->
+
                 <!-- Atividades Recentes -->
                 <div class="mt-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Atividades Recentes</h3>
@@ -181,4 +183,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

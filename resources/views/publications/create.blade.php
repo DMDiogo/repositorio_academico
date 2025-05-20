@@ -48,11 +48,13 @@
                                 <select id="knowledge_area_id" name="knowledge_area_id" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                     <option value="">Selecione uma área</option>
-                                    @foreach($knowledgeAreas as $area)
+                                    @forelse($knowledgeAreas as $area)
                                         <option value="{{ $area->id }}" {{ old('knowledge_area_id') == $area->id ? 'selected' : '' }}>
                                             {{ $area->name }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                        <option disabled>Nenhuma área cadastrada</option>
+                                    @endforelse
                                 </select>
                             </div>
                             @error('knowledge_area_id')
@@ -67,11 +69,13 @@
                                 <select id="publication_type_id" name="publication_type_id" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                     <option value="">Selecione um tipo</option>
-                                    @foreach($publicationTypes as $type)
+                                    @forelse($publicationTypes as $type)
                                         <option value="{{ $type->id }}" {{ old('publication_type_id') == $type->id ? 'selected' : '' }}>
                                             {{ $type->name }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                        <option disabled>Nenhum tipo cadastrado</option>
+                                    @endforelse
                                 </select>
                             </div>
                             @error('publication_type_id')
@@ -182,4 +186,4 @@
         </form>
     </div>
 </div>
-@endsection 
+@endsection

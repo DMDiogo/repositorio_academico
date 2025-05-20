@@ -61,7 +61,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/criar', [PublicationController::class, 'create'])->name('publications.create');
         Route::post('/', [PublicationController::class, 'store'])->name('publications.store');
         Route::get('/{publication}', [PublicationController::class, 'show'])->name('publications.show');
+        Route::get('/{publication}/download', [PublicationController::class, 'download'])->name('publications.download');
+        Route::get('/{publication}/editar', [PublicationController::class, 'edit'])->name('publications.edit');
+        Route::put('/{publication}', [PublicationController::class, 'update'])->name('publications.update');
+        Route::delete('/{publication}', [PublicationController::class, 'destroy'])->name('publications.destroy');
     });
+
+    Route::get('/minhas-publicacoes', [PublicationController::class, 'myPublications'])
+        ->name('publications.my-publications');
 });
 
 Route::middleware(['auth'])->group(function () {

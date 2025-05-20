@@ -7,15 +7,17 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display the dashboard view.
-     */
     public function index()
     {
-        $publications = Publication::where('user_id', auth()->id())
+        $user = auth()->user();
+        
+        $publications = Publication::where('user_id', $user->id)
             ->latest()
-            ->paginate(10);
+            ->get();
 
-        return view('dashboard', compact('publications'));
+        $totalDownloads = $publications->sum('download_count');
+        $mostDownloaded = $publications->sortByDesc('download_count')->first();
+
+        return view('dashboard', compact('publications', 'totalDownloads', 'mostDownloaded'));
     }
-} 
+}

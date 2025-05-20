@@ -2,12 +2,35 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    @if (session('success'))
+        <div class="mb-8 rounded-md bg-green-50 p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Publicações Acadêmicas</h1>
             <p class="mt-2 text-gray-600">Explore nossa coleção de artigos, teses e materiais acadêmicos</p>
         </div>
-        <div class="mt-4 md:mt-0">
+        <div class="mt-4 md:mt-0 flex items-center space-x-4">
+            @if(auth()->check() && auth()->user()->role === 'professor')
+                <a href="{{ route('publications.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Criar nova publicação
+                </a>
+            @endif
             <div class="relative rounded-md shadow-sm max-w-xs">
                 <input type="text" name="search" id="search" class="block w-full rounded-md border-0 py-3 pl-4 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Buscar publicações...">
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -72,7 +95,7 @@
 
     <!-- Lista de Publicações -->
     <div class="grid grid-cols-1 gap-6">
-        @foreach($publications as $publication)
+        @forelse($publications as $publication)
         <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
             <div class="p-6">
                 <div class="flex flex-col lg:flex-row">
@@ -113,7 +136,11 @@
                                     <div class="flex space-x-1 text-sm text-gray-500">
                                         <span>{{ $publication->page_count }} páginas</span>
                                         <span aria-hidden="true">&middot;</span>
-                                        <span>{{ strtoupper($publication->file_type) }} ({{ number_format($publication->file_size / 1024, 1) }} MB)</span>
+                                        <span>{{ strtoupper($publication->file_type) }} ({{ 
+                                            $publication->file_size > 1024 * 1024 
+                                                ? number_format($publication->file_size / (1024 * 1024), 1) . ' MB'
+                                                : number_format($publication->file_size / 1024, 1) . ' KB' 
+                                        }})</span>
                                     </div>
                                 </div>
                             </div>
@@ -133,12 +160,34 @@
                 </div>
             </div>
         </div>
-        @endforeach
-    </div>
+        @empty
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-6 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Nenhuma publicação encontrada</h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Ainda não há publicações cadastradas no sistema.
+                    </p>
+                    @if(auth()->check() && auth()->user()->role === 'professor')
+                        <div class="mt-6">
+                            <a href="{{ route('publications.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Criar nova publicação
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endforelse
 
-    <!-- Paginação -->
-    <div class="mt-8 flex justify-center">
-        {{ $publications->links() }}
+        <!-- Paginação -->
+        <div class="mt-8 flex justify-center">
+            {{ $publications->links() }}
+        </div>
     </div>
 </div>
-@endsection 
+@endsection
