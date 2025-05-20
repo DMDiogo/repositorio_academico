@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'user_type',
         'password',
+        'role'
     ];
 
     /**
@@ -40,13 +41,10 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
     
     /**
      * Obtém o perfil do usuário.
@@ -56,14 +54,6 @@ class User extends Authenticatable
         return $this->hasOne(UserProfile::class);
     }
     
-    /**
-     * Verifica se o usuário é administrador
-     */
-    public function isAdmin(): bool
-    {
-        return $this->email === 'admin@repositorio.com';
-    }
-
     /**
      * Verifica se o usuário é um professor
      */
@@ -78,6 +68,14 @@ class User extends Authenticatable
     public function isStudent(): bool
     {
         return $this->user_type === 'student';
+    }
+
+    /**
+     * Verifica se o usuário é um administrador
+     */
+    public function isAdmin(): bool
+    {
+        return $this->user_type === 'admin';
     }
 
     /**

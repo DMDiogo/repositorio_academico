@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,14 +29,18 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
+// Remover esta rota
+// Route::get('/approval-pending', function () {
+//     return view('auth.approval-pending');
+// })->name('approval.pending');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Rotas protegidas (requerem autenticação)
 Route::middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
     
     // Perfil do usuário
     Route::get('/profile', function () {
@@ -69,10 +74,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/minhas-publicacoes', [PublicationController::class, 'myPublications'])
         ->name('publications.my-publications');
-});
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
-    Route::post('/publications', [PublicationController::class, 'store'])->name('publications.store');
+    // Gerenciamento de Usuários (apenas para administradores)
+    Route::middleware('admin')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 });

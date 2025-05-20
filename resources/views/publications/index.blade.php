@@ -23,7 +23,7 @@
             <p class="mt-2 text-gray-600">Explore nossa coleção de artigos, teses e materiais acadêmicos</p>
         </div>
         <div class="mt-4 md:mt-0 flex items-center space-x-4">
-            @if(auth()->check() && auth()->user()->role === 'professor')
+            @if(auth()->check() && auth()->user()->user_type === 'teacher')
                 <a href="{{ route('publications.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -127,7 +127,16 @@
                         <div class="mt-4 flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <img class="h-10 w-10 rounded-full" src="{{ $publication->user->profile_photo_url }}" alt="{{ $publication->user->name }}">
+                                    <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+                                        @php
+                                            $nameParts = explode(' ', $publication->user->name);
+                                            $initials = strtoupper(substr($nameParts[0], 0, 1));
+                                            if (count($nameParts) > 1) {
+                                                $initials .= strtoupper(substr($nameParts[1], 0, 1));
+                                            }
+                                            echo $initials;
+                                        @endphp
+                                    </div>
                                 </div>
                                 <div class="ml-3">
                                     <p class="text-sm font-medium text-gray-900">

@@ -8,7 +8,14 @@
             <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-6 text-white">
                 <div class="flex items-center">
                     <div class="h-24 w-24 rounded-full bg-white text-blue-700 flex items-center justify-center text-3xl font-bold shadow-lg border-4 border-white">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                        @php
+                            $nameParts = explode(' ', Auth::user()->name);
+                            $initials = strtoupper(substr($nameParts[0], 0, 1));
+                            if (count($nameParts) > 1) {
+                                $initials .= strtoupper(substr($nameParts[1], 0, 1));
+                            }
+                            echo $initials;
+                        @endphp
                     </div>
                     <div class="ml-6">
                         <h1 class="text-2xl font-bold">{{ Auth::user()->name }}</h1>

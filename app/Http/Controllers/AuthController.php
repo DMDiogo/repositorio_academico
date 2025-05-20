@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Models\UserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,6 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
             return redirect()->intended('/dashboard');
         }
 
@@ -76,16 +76,24 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
+            'approved' => false,
         ]);
 
-        // Criar perfil de usuário vazio
+        // Criar perfil de usuário com configurações apropriadas
         UserProfile::create([
             'user_id' => $user->id,
+            'department' => $user->user_type === 'admin' ? 'Administração' : null,
+            'position' => $user->user_type === 'admin' ? 'Administrador do Sistema' : null,
+            'bio' => $user->user_type === 'admin' ? 'Administrador responsável pela gestão e supervisão do sistema.' : null,
+            'education' => $user->user_type === 'admin' ? 'Gestão de Sistemas' : null,
+            'specialization' => $user->user_type === 'admin' ? 'Administração de Sistemas' : null,
+            'research_areas' => $user->user_type === 'admin' ? 'Gestão de Repositórios Acadêmicos' : null,
+            'office_hours' => $user->user_type === 'admin' ? 'Horário Comercial' : null,
+            'contact_info' => $user->user_type === 'admin' ? 'admin@sistema.com' : null
         ]);
 
-        Auth::login($user);
-
-        return redirect('/dashboard');
+        return redirect()->route('login')
+            ->with('success', 'Sua conta foi criada com sucesso! Aguarde a aprovação do administrador para acessar o sistema.');
     }
 
     /**
@@ -100,4 +108,4 @@ class AuthController extends Controller
 
         return redirect('/');
     }
-} 
+}
