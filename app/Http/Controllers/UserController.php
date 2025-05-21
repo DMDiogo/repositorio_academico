@@ -65,4 +65,35 @@ class UserController extends Controller
         return redirect()->route('users.index')
             ->with('success', 'Usuário excluído com sucesso.');
     }
+
+    public function approve(User $user)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $user->update([
+            'approval_status' => 'approved'
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Usuário aprovado com sucesso!');
+    }
+
+    public function reject(Request $request, User $user)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'rejection_reason' => 'required|string|max:500'
+        ]);
+
+        $user->update([
+            'approval_status' => 'rejected',
+            'rejection_reason' => $request->rejection_reason
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Usuário rejeitado com sucesso!');
+    }
 }

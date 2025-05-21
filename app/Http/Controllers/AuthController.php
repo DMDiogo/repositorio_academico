@@ -76,7 +76,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
-            'approved' => false,
+            'approval_status' => 'pending'
         ]);
 
         // Criar perfil de usuário com configurações apropriadas

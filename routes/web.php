@@ -29,15 +29,21 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
-// Remover esta rota
-// Route::get('/approval-pending', function () {
-//     return view('auth.approval-pending');
-// })->name('approval.pending');
+// Rota para página de aprovação pendente
+Route::get('/approval-pending', function () {
+    return view('auth.approval-pending');
+})->name('approval.pending');
+
+// Rotas de aprovação de usuários
+Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
+    Route::post('/users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
+    Route::post('/users/{user}/reject', [UserController::class, 'reject'])->name('users.reject');
+});
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Rotas protegidas (requerem autenticação)
-Route::middleware('auth')->group(function () {
+Route::middleware(['web', 'auth', \App\Http\Middleware\CheckUserApproval::class])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
@@ -76,7 +82,7 @@ Route::middleware('auth')->group(function () {
         ->name('publications.my-publications');
 
     // Gerenciamento de Usuários (apenas para administradores)
-    Route::middleware('admin')->group(function () {
+    Route::middleware([\App\Http\Middleware\AdminMiddleware::class])->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');

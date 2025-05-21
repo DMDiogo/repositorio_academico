@@ -23,7 +23,9 @@ class User extends Authenticatable
         'email',
         'user_type',
         'password',
-        'role'
+        'role',
+        'approval_status',
+        'rejection_reason'
     ];
 
     /**
@@ -76,6 +78,30 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->user_type === 'admin';
+    }
+
+    /**
+     * Check if the user is approved
+     */
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved';
+    }
+
+    /**
+     * Check if the user is pending approval
+     */
+    public function isPending(): bool
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    /**
+     * Check if the user is rejected
+     */
+    public function isRejected(): bool
+    {
+        return $this->approval_status === 'rejected';
     }
 
     /**

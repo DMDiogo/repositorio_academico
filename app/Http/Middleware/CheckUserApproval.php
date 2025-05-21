@@ -21,8 +21,8 @@ class CheckUserApproval
             return $next($request);
         }
 
-        // Se o usuário não estiver aprovado e não for admin, redireciona para uma página de espera
-        if (!$user->approved) {
+        // Se o usuário não estiver aprovado, redireciona para uma página de espera
+        if (!$user->isApproved()) {
             return redirect()->route('approval.pending');
         }
 

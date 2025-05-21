@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->enum('user_type', ['student', 'teacher', 'admin'])->default('student')->after('email');
+            $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending')->after('user_type');
+            $table->text('rejection_reason')->nullable()->after('approval_status');
         });
     }
 
@@ -23,6 +25,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('user_type');
+            $table->dropColumn('approval_status');
+            $table->dropColumn('rejection_reason');
         });
     }
 }; 
