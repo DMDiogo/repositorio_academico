@@ -20,6 +20,7 @@ class AdminSeeder extends Seeder
             'email' => 'admin@repositorio.com',
             'password' => Hash::make('admin123'),
             'user_type' => 'admin',
+            'approval_status' => 'approved',
             'email_verified_at' => now(),
         ]);
 
@@ -32,4 +33,4 @@ class AdminSeeder extends Seeder
             'profile_visibility' => 'public',
         ]);
     }
-} 
+}

@@ -4,11 +4,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AreaController;
 
-Route::get('/', function () {
-    return view('welcome_new');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/publicacoes', function () {
     return view('publications.index');
@@ -62,20 +62,22 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\CheckUserApproval::class]
     })->name('password.update');
 
     // Áreas
-    Route::get('/areas', function () {
-        return view('areas.index');
-    })->name('areas.index');
+    Route::prefix('areas')->group(function () {
+        Route::get('/', [AreaController::class, 'index'])->name('areas.index');
+        Route::get('/{area}', [AreaController::class, 'show'])->name('areas.show');
+    });
 
     // Publicações
     Route::prefix('publicacoes')->group(function () {
         Route::get('/', [PublicationController::class, 'index'])->name('publications.index');
-        Route::get('/criar', [PublicationController::class, 'create'])->name('publications.create');
+        Route::get('/criar', [PublicationController::class, 'create'])->name('publications.create')->middleware('auth');
         Route::post('/', [PublicationController::class, 'store'])->name('publications.store');
         Route::get('/{publication}', [PublicationController::class, 'show'])->name('publications.show');
         Route::get('/{publication}/download', [PublicationController::class, 'download'])->name('publications.download');
         Route::get('/{publication}/editar', [PublicationController::class, 'edit'])->name('publications.edit');
         Route::put('/{publication}', [PublicationController::class, 'update'])->name('publications.update');
         Route::delete('/{publication}', [PublicationController::class, 'destroy'])->name('publications.destroy');
+        Route::get('/{publication}/preview', [PublicationController::class, 'preview'])->name('publications.preview');
     });
 
     Route::get('/minhas-publicacoes', [PublicationController::class, 'myPublications'])
@@ -90,4 +92,7 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\CheckUserApproval::class]
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
+
+    Route::resource('publications', PublicationController::class);
 });
+

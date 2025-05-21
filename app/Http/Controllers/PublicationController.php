@@ -207,4 +207,19 @@ class PublicationController extends Controller
         return redirect()->route('publications.my-publications')
             ->with('success', 'Publicação excluída com sucesso!');
     }
+
+    public function preview(Publication $publication)
+    {
+        // Verifica se o usuário tem permissão para visualizar
+        $this->authorize('view', $publication);
+
+        // Incrementa o contador de visualizações
+        $publication->increment('view_count');
+
+        // Retorna o arquivo PDF com headers apropriados
+        return response()->file(storage_path('app/public/' . $publication->file_path), [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $publication->title . '.pdf"',
+        ]);
+    }
 }
