@@ -80,8 +80,9 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\CheckUserApproval::class]
         Route::get('/{publication}/preview', [PublicationController::class, 'preview'])->name('publications.preview');
     });
 
-    Route::get('/minhas-publicacoes', [PublicationController::class, 'myPublications'])
-        ->name('publications.my-publications');
+    Route::get('/my-publications', [PublicationController::class, 'myPublications'])
+        ->name('my-publications')
+        ->middleware(['auth', 'verified']);
 
     // Gerenciamento de Usuários (apenas para administradores)
     Route::middleware([\App\Http\Middleware\AdminMiddleware::class])->group(function () {

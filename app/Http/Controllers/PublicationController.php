@@ -79,18 +79,59 @@ class PublicationController extends Controller
         return view('publications.show', compact('publication'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $query = Publication::with(['author', 'knowledgeArea', 'publicationType']);
-        
-        // Se for professor, mostrar apenas suas publicações
-        if (auth()->user()->role === 'professor') {
-            $query->where('user_id', auth()->id());
+        $query = Publication::query();
+
+        // Filtro por área de conhecimento
+        if ($request->filled('area')) {
+            $query->where('knowledge_area_id', $request->area);
         }
 
-        $publications = $query->latest()->paginate(12);
+        // Filtro por tipo de publicação
+        if ($request->filled('tipo')) {
+            $query->where('publication_type_id', $request->tipo);
+        }
+
+        // Filtro por ano
+        if ($request->filled('ano')) {
+            if ($request->ano === 'anterior') {
+                $query->whereYear('publication_date', '<', now()->year - 5);
+            } else {
+                $query->whereYear('publication_date', $request->ano);
+            }
+        }
+
+        // Busca por texto
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('abstract', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Ordenação
+        switch ($request->get('ordenar', 'recentes')) {
+            case 'antigos':
+                $query->orderBy('publication_date', 'asc');
+                break;
+            case 'downloads':
+                $query->orderBy('download_count', 'desc');
+                break;
+            case 'alfabetica':
+                $query->orderBy('title', 'asc');
+                break;
+            default: // recentes
+                $query->orderBy('publication_date', 'desc');
+        }
+
+        $publications = $query->with(['user', 'knowledgeArea', 'publicationType'])->paginate(10);
         $knowledgeAreas = KnowledgeArea::all();
         $publicationTypes = PublicationType::all();
+
+        if ($request->ajax()) {
+            return view('publications._list', compact('publications'))->render();
+        }
 
         return view('publications.index', compact('publications', 'knowledgeAreas', 'publicationTypes'));
     }
@@ -110,23 +151,13 @@ class PublicationController extends Controller
         return response()->download($filePath, $downloadName);
     }
 
-    public function myPublications()
-    {
-        $publications = Publication::with(['knowledgeArea', 'publicationType'])
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(12);
-
-        return view('publications.my-publications', compact('publications'));
-    }
-
     /**
      * Show the form for editing the specified publication.
      */
     public function edit(Publication $publication)
     {
-        // Verify if the user owns this publication
-        if ($publication->user_id !== auth()->id()) {
+        // Permitir acesso ao admin ou ao dono da publicação
+        if (!auth()->user()->isAdmin() && $publication->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -141,8 +172,8 @@ class PublicationController extends Controller
      */
     public function update(Request $request, Publication $publication)
     {
-        // Verify if the user owns this publication
-        if ($publication->user_id !== auth()->id()) {
+        // Permitir acesso ao admin ou ao dono da publicação
+        if (!auth()->user()->isAdmin() && $publication->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -187,14 +218,14 @@ class PublicationController extends Controller
 
         $publication->save();
 
-        return redirect()->route('publications.my-publications')
+        return redirect()->route('my-publications')
             ->with('success', 'Publicação atualizada com sucesso!');
     }
 
     public function destroy(Publication $publication)
     {
-        // Verificar se o usuário é dono da publicação
-        if ($publication->user_id !== auth()->id()) {
+        // Permitir acesso ao admin ou ao dono da publicação
+        if (!auth()->user()->isAdmin() && $publication->user_id !== auth()->id()) {
             abort(403);
         }
 
@@ -204,7 +235,7 @@ class PublicationController extends Controller
         // Deletar o registro do banco de dados
         $publication->delete();
 
-        return redirect()->route('publications.my-publications')
+        return redirect()->route('my-publications')
             ->with('success', 'Publicação excluída com sucesso!');
     }
 
@@ -221,5 +252,11 @@ class PublicationController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $publication->title . '.pdf"',
         ]);
+    }
+
+    public function myPublications()
+    {
+        $publications = auth()->user()->publications()->latest()->paginate(10);
+        return view('publications.my-publications', compact('publications'));
     }
 }

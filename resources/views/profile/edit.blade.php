@@ -46,7 +46,15 @@
                             
                             <div>
                                 <p class="text-sm font-medium text-gray-500">Tipo de Usuário</p>
-                                <p class="text-gray-800">{{ Auth::user()->isTeacher() ? 'Professor' : 'Aluno' }}</p>
+                                <p class="text-gray-800">
+                                    @if(Auth::user()->isAdmin())
+                                        Administrador
+                                    @elseif(Auth::user()->isTeacher())
+                                        Professor
+                                    @else
+                                        Aluno
+                                    @endif
+                                </p>
                             </div>
                         </div>
                     </div>
