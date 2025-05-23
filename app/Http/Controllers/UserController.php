@@ -85,13 +85,8 @@ class UserController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'rejection_reason' => 'required|string|max:500'
-        ]);
-
         $user->update([
-            'approval_status' => 'rejected',
-            'rejection_reason' => $request->rejection_reason
+            'approval_status' => 'rejected'
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Usuário rejeitado com sucesso!');

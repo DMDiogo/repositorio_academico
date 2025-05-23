@@ -31,6 +31,16 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        // Primeiro, vamos verificar se o usuário existe
+        $user = User::where('email', $request->email)->first();
+        
+        // Se o usuário existe e foi rejeitado, retorna mensagem específica
+        if ($user && $user->isRejected()) {
+            return back()->withErrors([
+                'email' => 'Seu cadastro foi recusado pelo administrador.',
+            ])->onlyInput('email');
+        }
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended('/dashboard');
