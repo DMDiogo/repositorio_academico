@@ -37,7 +37,7 @@ class PublicationController extends Controller
             'publication_date' => 'required|date',
             'knowledge_area_id' => 'required|exists:knowledge_areas,id',
             'publication_type_id' => 'required|exists:publication_types,id',
-            'file' => 'required|file|mimes:pdf,doc,docx|max:10240', // max 10MB
+            'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
             'page_count' => 'nullable|integer|min:1',
             'language' => 'required|string|max:10',
             'doi' => 'nullable|string|max:255',
@@ -52,7 +52,7 @@ class PublicationController extends Controller
         $publication = new Publication();
         $publication->user_id = auth()->id();
         $publication->title = $validated['title'];
-        $publication->slug = Str::slug($validated['title']); // Add this line
+        $publication->slug = Str::slug($validated['title']);
         $publication->abstract = $validated['abstract'];
         $publication->publication_date = $validated['publication_date'];
         $publication->knowledge_area_id = $validated['knowledge_area_id'];
@@ -239,24 +239,49 @@ class PublicationController extends Controller
             ->with('success', 'Publicação excluída com sucesso!');
     }
 
-    public function preview(Publication $publication)
-    {
-        // Verifica se o usuário tem permissão para visualizar
-        $this->authorize('view', $publication);
-
-        // Incrementa o contador de visualizações
-        $publication->increment('view_count');
-
-        // Retorna o arquivo PDF com headers apropriados
-        return response()->file(storage_path('app/public/' . $publication->file_path), [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $publication->title . '.pdf"',
-        ]);
-    }
-
     public function myPublications()
     {
         $publications = auth()->user()->publications()->latest()->paginate(10);
         return view('publications.my-publications', compact('publications'));
+    }
+
+    public function preview(Publication $publication)
+    {
+        // Increment view count
+        $publication->increment('view_count');
+
+        // Get the full path of the file
+        $filePath = storage_path('app/public/' . $publication->file_path);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'Arquivo não encontrado');
+        }
+
+        // Handle different file types
+        switch (strtolower($publication->file_type)) {
+            case 'pdf':
+                return response()->file($filePath, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+                ]);
+
+            case 'doc':
+            case 'docx':
+                // Convert DOC/DOCX to HTML for preview
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load($filePath);
+                $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
+                
+                ob_start();
+                $htmlWriter->save('php://output');
+                $html = ob_get_clean();
+
+                return response()->view('publications.preview', [
+                    'publication' => $publication,
+                    'content' => $html
+                ]);
+
+            default:
+                abort(400, 'Formato de arquivo não suportado para preview');
+        }
     }
 }

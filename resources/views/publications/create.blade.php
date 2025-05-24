@@ -83,17 +83,8 @@
                             @enderror
                         </div>
 
-                        <!-- Data de Publicação -->
-                        <div class="sm:col-span-3">
-                            <label for="publication_date" class="block text-sm font-medium text-gray-700">Data de Publicação</label>
-                            <div class="mt-1">
-                                <input type="date" name="publication_date" id="publication_date" value="{{ old('publication_date') }}" required
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                            </div>
-                            @error('publication_date')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <!-- Data de Publicação (Hidden) -->
+                        <input type="hidden" name="publication_date" id="publication_date" value="{{ date('Y-m-d') }}">
 
                         <!-- Número de Páginas -->
                         <div class="sm:col-span-3">
@@ -107,6 +98,12 @@
                             @enderror
                         </div>
 
+                        <!-- DOI (Hidden) -->
+                        <input type="hidden" name="doi" id="doi" value="{{ 'DOI-' . time() . rand(1000,9999) }}">
+
+                        <!-- ISSN (Hidden) -->
+                        <input type="hidden" name="issn" id="issn" value="{{ 'ISSN-' . date('Y') . rand(1000,9999) }}">
+
                         <!-- Idioma -->
                         <div class="sm:col-span-3">
                             <label for="language" class="block text-sm font-medium text-gray-700">Idioma</label>
@@ -119,30 +116,6 @@
                                 </select>
                             </div>
                             @error('language')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- DOI -->
-                        <div class="sm:col-span-3">
-                            <label for="doi" class="block text-sm font-medium text-gray-700">DOI (opcional)</label>
-                            <div class="mt-1">
-                                <input type="text" name="doi" id="doi" value="{{ old('doi') }}"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                            </div>
-                            @error('doi')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- ISSN -->
-                        <div class="sm:col-span-3">
-                            <label for="issn" class="block text-sm font-medium text-gray-700">ISSN (opcional)</label>
-                            <div class="mt-1">
-                                <input type="text" name="issn" id="issn" value="{{ old('issn') }}"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                            </div>
-                            @error('issn')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

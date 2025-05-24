@@ -146,18 +146,14 @@
                                 <dt class="font-medium text-gray-500">Idioma:</dt>
                                 <dd class="col-span-2 text-gray-700">{{ $publication->language }}</dd>
                             </div>
-                            @if($publication->issn)
                             <div class="grid grid-cols-3 gap-4">
                                 <dt class="font-medium text-gray-500">ISSN:</dt>
-                                <dd class="col-span-2 text-gray-700">{{ $publication->issn }}</dd>
+                                <dd class="col-span-2 text-gray-700">{{ $publication->issn ?? 'Não informado' }}</dd>
                             </div>
-                            @endif
-                            @if($publication->doi)
                             <div class="grid grid-cols-3 gap-4">
                                 <dt class="font-medium text-gray-500">DOI:</dt>
-                                <dd class="col-span-2 text-gray-700">{{ $publication->doi }}</dd>
+                                <dd class="col-span-2 text-gray-700">{{ $publication->doi ?? 'Não informado' }}</dd>
                             </div>
-                            @endif
                         </dl>
                     </div>
                 </div>
@@ -183,42 +179,25 @@
         </div>
 
         <!-- Preview e Download -->
-        <div class="px-6 py-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h2 class="text-xl font-bold text-gray-900">Preview do Documento</h2>
-                <div class="mt-4 md:mt-0">
-                    <a href="{{ route('publications.download', $publication) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Baixar PDF Completo
-                    </a>
-                </div>
-            </div>
-
-            <div class="border border-gray-300 rounded-lg overflow-hidden">
-                <div class="bg-gray-100 px-4 py-3 border-b border-gray-300 flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-700">Preview (primeiras páginas)</span>
-                    <div class="flex items-center space-x-2">
-                        <button type="button" class="inline-flex items-center p-1 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <span class="text-sm text-gray-500">1 / 3</span>
-                        <button type="button" class="inline-flex items-center p-1 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="bg-white p-4 flex justify-center">
-                    <img src="https://via.placeholder.com/800x1100/f8fafc/64748b?text=Preview+da+Publicação" alt="Preview da publicação" class="max-w-full h-auto border">
-                </div>
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex justify-end space-x-3">
+                <a href="{{ route('publications.preview', $publication) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Visualizar
+                </a>
+                <a href="{{ route('publications.download', $publication) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download
+                </a>
             </div>
         </div>
-    </div>
 
     @if(isset($relatedPublications) && $relatedPublications->count() > 0)
     <!-- Publicações Relacionadas -->
