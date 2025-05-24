@@ -25,7 +25,8 @@ class User extends Authenticatable
         'password',
         'role',
         'approval_status',
-        'rejection_reason'
+        'rejection_reason',
+        'course',  // Add this line
     ];
 
     /**

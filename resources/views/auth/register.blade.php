@@ -90,6 +90,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Course Selection (for students) -->
+                    <div id="courseSelection" class="hidden">
+                        <label for="course" class="block text-sm font-semibold text-gray-700 mb-2">Curso</label>
+                        <select
+                            id="course"
+                            name="course"
+                            class="block w-full pl-3 pr-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm"
+                        >
+                            <option value="">Selecione seu curso</option>
+                            @php
+                                $courses = [
+                                    'Direito', 'Sociologia', 'Filosofia', 'Psicologia', 'Ciências da Educação',
+                                    'Ensino da Matemática', 'Ensino da Biologia', 'Ensino da Física', 'Ensino da Química',
+                                    'Ensino das Línguas', 'Economia', 'Gestão', 'Administração', 'Contabilidade e Auditoria',
+                                    'Finanças', 'Marketing', 'Engenharia Informática', 'Ciências da Computação',
+                                    'Engenharia Civil', 'Engenharia Eléctrica', 'Engenharia Electrónica',
+                                    'Engenharia de Telecomunicações', 'Engenharia Mecânica', 'Biologia', 'Química',
+                                    'Física', 'Geologia', 'Medicina', 'Enfermagem', 'Farmácia', 'Análises Clínicas',
+                                    'Saúde Pública', 'Engenharia Agronómica', 'Engenharia Florestal', 'Engenharia Ambiental',
+                                    'Zootecnia', 'Letras', 'Comunicação Social', 'Jornalismo', 'Tradução e Interpretação',
+                                    'História', 'Geografia'
+                                ];
+                            @endphp
+                            @foreach($courses as $courseOption)
+                                <option value="{{ $courseOption }}" {{ old('course') === $courseOption ? 'selected' : '' }}>
+                                    {{ $courseOption }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     
                     <!-- Email Address -->
                     <div>
@@ -213,4 +244,29 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const studentRadio = document.getElementById('user_type_student');
+    const teacherRadio = document.getElementById('user_type_teacher');
+    const courseSelection = document.getElementById('courseSelection');
+    const courseInput = document.getElementById('course');
+
+    function toggleCourseSelection() {
+        if (studentRadio.checked) {
+            courseSelection.classList.remove('hidden');
+            courseInput.required = true;
+        } else {
+            courseSelection.classList.add('hidden');
+            courseInput.required = false;
+        }
+    }
+
+    studentRadio.addEventListener('change', toggleCourseSelection);
+    teacherRadio.addEventListener('change', toggleCourseSelection);
+    
+    // Initial check
+    toggleCourseSelection();
+});
+</script>
 @endsection

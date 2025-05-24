@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Publication;
-use App\Models\KnowledgeArea;
 use App\Models\PublicationType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,13 +16,8 @@ class PublicationController extends Controller
      */
     public function create()
     {
-        $knowledgeAreas = KnowledgeArea::all();
         $publicationTypes = PublicationType::all();
-        
-        // Debug para verificar se os tipos de publicação estão sendo carregados
-        \Log::debug('Tipos de publicação:', ['types' => $publicationTypes->toArray()]);
-        
-        return view('publications.create', compact('knowledgeAreas', 'publicationTypes'));
+        return view('publications.create', compact('publicationTypes'));
     }
 
     /**
@@ -31,39 +25,47 @@ class PublicationController extends Controller
      */
     public function store(Request $request)
     {
+        // Validação dos campos
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'course' => 'required|string',
+            'discipline' => 'required|string',
             'abstract' => 'required|string',
-            'publication_date' => 'required|date',
-            'knowledge_area_id' => 'required|exists:knowledge_areas,id',
             'publication_type_id' => 'required|exists:publication_types,id',
             'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
             'page_count' => 'nullable|integer|min:1',
             'language' => 'required|string|max:10',
+            'publication_date' => 'required|date',
             'doi' => 'nullable|string|max:255',
             'issn' => 'nullable|string|max:255',
         ]);
 
-        // Handle file upload
-        $file = $request->file('file');
-        $fileName = Str::slug($request->title) . '.' . $file->getClientOriginalExtension();
-        $filePath = $file->storeAs('publications', $fileName, 'public');
-
         $publication = new Publication();
-        $publication->user_id = auth()->id();
         $publication->title = $validated['title'];
-        $publication->slug = Str::slug($validated['title']);
+        $publication->course = $validated['course'];
+        $publication->discipline = $validated['discipline'];
         $publication->abstract = $validated['abstract'];
-        $publication->publication_date = $validated['publication_date'];
-        $publication->knowledge_area_id = $validated['knowledge_area_id'];
         $publication->publication_type_id = $validated['publication_type_id'];
-        $publication->file_path = $filePath;
-        $publication->file_type = $file->getClientOriginalExtension();
-        $publication->file_size = $file->getSize();
-        $publication->page_count = $validated['page_count'] ?? 0;
+        $publication->page_count = $validated['page_count'] ?? null;
         $publication->language = $validated['language'];
+        $publication->publication_date = $validated['publication_date'];
         $publication->doi = $validated['doi'];
         $publication->issn = $validated['issn'];
+        $publication->user_id = auth()->id();
+        $publication->knowledge_area_id = null; // Definindo explicitamente como null
+        $publication->slug = Str::slug($validated['title']);
+        
+        // Upload do arquivo
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = Str::slug($request->title) . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('publications', $fileName, 'public');
+            
+            $publication->file_path = $filePath;
+            $publication->file_type = $file->getClientOriginalExtension();
+            $publication->file_size = $file->getSize();
+        }
+
         $publication->download_count = 0;
         $publication->save();
 
@@ -82,11 +84,6 @@ class PublicationController extends Controller
     public function index(Request $request)
     {
         $query = Publication::query();
-
-        // Filtro por área de conhecimento
-        if ($request->filled('area')) {
-            $query->where('knowledge_area_id', $request->area);
-        }
 
         // Filtro por tipo de publicação
         if ($request->filled('tipo')) {
@@ -125,15 +122,14 @@ class PublicationController extends Controller
                 $query->orderBy('publication_date', 'desc');
         }
 
-        $publications = $query->with(['user', 'knowledgeArea', 'publicationType'])->paginate(10);
-        $knowledgeAreas = KnowledgeArea::all();
+        $publications = $query->with(['user', 'publicationType'])->paginate(10);
         $publicationTypes = PublicationType::all();
 
         if ($request->ajax()) {
             return view('publications._list', compact('publications'))->render();
         }
 
-        return view('publications.index', compact('publications', 'knowledgeAreas', 'publicationTypes'));
+        return view('publications.index', compact('publications', 'publicationTypes'));
     }
 
     public function download(Publication $publication)
@@ -161,10 +157,9 @@ class PublicationController extends Controller
             abort(403);
         }
 
-        $knowledgeAreas = KnowledgeArea::all();
         $publicationTypes = PublicationType::all();
 
-        return view('publications.edit', compact('publication', 'knowledgeAreas', 'publicationTypes'));
+        return view('publications.edit', compact('publication', 'publicationTypes'));
     }
 
     /**

@@ -69,12 +69,14 @@ class AuthController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'user_type' => ['required', 'string', 'in:student,teacher'],
+            'course' => ['required_if:user_type,student', 'string', 'nullable'],
             'terms' => ['required', 'accepted'],
         ], [
             'terms.required' => 'Você deve aceitar os Termos de Serviço e Política de Privacidade.',
             'terms.accepted' => 'Você deve aceitar os Termos de Serviço e Política de Privacidade.',
             'user_type.required' => 'Você deve selecionar um tipo de usuário.',
             'user_type.in' => 'O tipo de usuário selecionado é inválido.',
+            'course.required_if' => 'O curso é obrigatório para alunos.',
         ]);
 
         if ($validator->fails()) {
@@ -86,6 +88,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
+            'course' => $request->user_type === 'student' ? $request->course : null,
             'approval_status' => 'pending'
         ]);
 

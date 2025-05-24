@@ -44,16 +44,7 @@
 
     <!-- Filtros -->
     <div class="bg-white shadow rounded-lg p-6 mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div>
-                <label for="area" class="block text-sm font-medium text-gray-700 mb-1">Área de Conhecimento</label>
-                <select id="area" name="area" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
-                    <option value="">Todas as áreas</option>
-                    @foreach($knowledgeAreas as $area)
-                        <option value="{{ $area->id }}">{{ $area->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
                 <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Publicação</label>
                 <select id="tipo" name="tipo" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
@@ -109,12 +100,14 @@
                     <div class="flex-1">
                         <div class="flex items-center space-x-3 mb-2">
                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                {{ $publication->knowledgeArea->name }}
+                                {{ $publication->course }}
                             </span>
                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                {{ $publication->discipline }}
+                            </span>
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                 {{ $publication->publicationType->name }}
                             </span>
-                            <span class="text-sm text-gray-500">{{ $publication->publication_date->format('F Y') }}</span>
                         </div>
                         <a href="{{ route('publications.show', $publication) }}" class="block">
                             <h3 class="text-xl font-semibold text-gray-900 hover:text-blue-600 transition">

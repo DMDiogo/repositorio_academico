@@ -19,8 +19,10 @@ class Publication extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
         'title',
+        'course',
+        'discipline',
+        'user_id',
         'abstract',
         'publication_date',
         'knowledge_area_id',

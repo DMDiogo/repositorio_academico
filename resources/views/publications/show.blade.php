@@ -51,9 +51,12 @@
                 <div>
                     <div class="flex flex-wrap gap-2 mb-2">
                         <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            {{ $publication->knowledgeArea->name }}
+                            {{ $publication->course }}
                         </span>
                         <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            {{ $publication->discipline }}
+                        </span>
+                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             {{ $publication->publicationType->name }}
                         </span>
                     </div>
@@ -153,6 +156,10 @@
                             <div class="grid grid-cols-3 gap-4">
                                 <dt class="font-medium text-gray-500">DOI:</dt>
                                 <dd class="col-span-2 text-gray-700">{{ $publication->doi ?? 'Não informado' }}</dd>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4">
+                                <dt class="font-medium text-gray-500">Número de Páginas:</dt>
+                                <dd class="col-span-2 text-gray-700">{{ $publication->page_count }}</dd>
                             </div>
                         </dl>
                     </div>
