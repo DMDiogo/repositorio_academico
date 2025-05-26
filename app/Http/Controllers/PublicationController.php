@@ -129,12 +129,30 @@ class PublicationController extends Controller
      */
     public function show(Publication $publication)
     {
+        $user = auth()->user();
+        
+        // Se o usuário for um professor ou admin, pode ver qualquer publicação
+        if ($user->isTeacher() || $user->isAdmin()) {
+            return view('publications.show', compact('publication'));
+        }
+        
+        // Se for um aluno, só pode ver publicações do seu curso
+        if ($user->isStudent() && $user->course !== $publication->course) {
+            abort(403, 'Você não tem permissão para visualizar esta publicação.');
+        }
+        
         return view('publications.show', compact('publication'));
     }
 
     public function index(Request $request)
     {
         $query = Publication::query();
+        $user = auth()->user();
+
+        // Se o usuário for um aluno, mostrar apenas publicações do seu curso
+        if ($user->isStudent()) {
+            $query->where('course', $user->course);
+        }
 
         // Filtro por tipo de publicação
         if ($request->filled('tipo')) {

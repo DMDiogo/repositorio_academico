@@ -60,6 +60,13 @@
                             {{ $publication->publicationType->name }}
                         </span>
                     </div>
+                    @if(auth()->user()->isStudent())
+                        <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded">
+                            <p class="text-sm">
+                                Esta publicação é específica para o curso de <strong>{{ $publication->course }}</strong>.
+                            </p>
+                        </div>
+                    @endif
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">
                         {{ $publication->title }}
                     </h1>
