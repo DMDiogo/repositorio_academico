@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use FPDF; // Change this import
+use PhpOffice\PhpWord\IOFactory; // Para DOCX
 
 class PublicationController extends Controller
 {
@@ -33,7 +35,6 @@ class PublicationController extends Controller
             'abstract' => 'required|string',
             'publication_type_id' => 'required|exists:publication_types,id',
             'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
-            'page_count' => 'nullable|integer|min:1',
             'language' => 'required|string|max:10',
             'publication_date' => 'required|date',
             'doi' => 'nullable|string|max:255',
@@ -46,13 +47,12 @@ class PublicationController extends Controller
         $publication->discipline = $validated['discipline'];
         $publication->abstract = $validated['abstract'];
         $publication->publication_type_id = $validated['publication_type_id'];
-        $publication->page_count = $validated['page_count'] ?? null;
         $publication->language = $validated['language'];
         $publication->publication_date = $validated['publication_date'];
         $publication->doi = $validated['doi'];
         $publication->issn = $validated['issn'];
         $publication->user_id = auth()->id();
-        $publication->knowledge_area_id = null; // Definindo explicitamente como null
+        $publication->knowledge_area_id = null;
         $publication->slug = Str::slug($validated['title']);
         
         // Upload do arquivo
@@ -64,6 +64,11 @@ class PublicationController extends Controller
             $publication->file_path = $filePath;
             $publication->file_type = $file->getClientOriginalExtension();
             $publication->file_size = $file->getSize();
+
+            // Detectar número de páginas
+            $fullPath = storage_path('app/public/' . $filePath);
+            $pageCount = $this->getPageCount($fullPath, $file->getClientOriginalExtension());
+            $publication->page_count = $pageCount;
         }
 
         $publication->download_count = 0;
@@ -71,6 +76,52 @@ class PublicationController extends Controller
 
         return redirect()->route('publications.index')
             ->with('success', 'Publicação criada com sucesso!');
+    }
+
+    /**
+     * Detecta o número de páginas do documento
+     */
+    private function getPageCount($filePath, $fileType)
+    {
+        try {
+            switch (strtolower($fileType)) {
+                case 'pdf':
+                    return $this->getPdfPageCount($filePath);
+                
+                case 'doc':
+                case 'docx':
+                    return $this->getDocxPageCount($filePath);
+                
+                default:
+                    return 0;
+            }
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    private function getPdfPageCount($filePath)
+    {
+        // Load PDF file
+        $pageCount = 0;
+        if (file_exists($filePath)) {
+            $pdf = file_get_contents($filePath);
+            $pageCount = preg_match_all("/\/Page\W/", $pdf);
+        }
+        return $pageCount;
+    }
+
+    private function getDocxPageCount($filePath)
+    {
+        $phpWord = IOFactory::load($filePath);
+        $pageCount = 0;
+        
+        foreach ($phpWord->getSections() as $section) {
+            $pageCount += ceil($section->getStyle()->getPageSizeW() / 
+                             $section->getStyle()->getPageSizeH());
+        }
+        
+        return $pageCount;
     }
 
     /**

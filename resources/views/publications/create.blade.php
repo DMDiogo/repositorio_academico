@@ -155,18 +155,6 @@
                         <!-- Data de Publicação (Hidden) -->
                         <input type="hidden" name="publication_date" id="publication_date" value="{{ date('Y-m-d') }}">
 
-                        <!-- Número de Páginas -->
-                        <div class="sm:col-span-3">
-                            <label for="page_count" class="block text-sm font-medium text-gray-700">Número de Páginas</label>
-                            <div class="mt-1">
-                                <input type="number" name="page_count" id="page_count" value="{{ old('page_count') }}" min="1"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                            </div>
-                            @error('page_count')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
                         <!-- DOI (Hidden) -->
                         <input type="hidden" name="doi" id="doi" value="{{ 'DOI-' . time() . rand(1000,9999) }}">
 
