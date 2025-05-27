@@ -147,39 +147,30 @@ class PublicationController extends Controller
     public function index(Request $request)
     {
         $query = Publication::query();
-        $user = auth()->user();
 
-        // Se o usuário for um aluno, mostrar apenas publicações do seu curso
-        if ($user->isStudent()) {
-            $query->where('course', $user->course);
+        // Filtrar apenas publicações do curso do aluno
+        if (auth()->user()->user_type === 'student') {
+            $query->where('course', auth()->user()->course);
         }
 
-        // Filtro por tipo de publicação
+        // Filtrar por tipo de publicação
         if ($request->filled('tipo')) {
             $query->where('publication_type_id', $request->tipo);
         }
 
-        // Filtro por ano
+        // Filtrar por ano
         if ($request->filled('ano')) {
             if ($request->ano === 'anterior') {
-                $query->whereYear('publication_date', '<', now()->year - 5);
+                $query->whereYear('created_at', '<', now()->subYears(5)->year);
             } else {
-                $query->whereYear('publication_date', $request->ano);
+                $query->whereYear('created_at', $request->ano);
             }
-        }
-
-        // Busca por texto
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('abstract', 'like', '%' . $request->search . '%');
-            });
         }
 
         // Ordenação
         switch ($request->get('ordenar', 'recentes')) {
             case 'antigos':
-                $query->orderBy('publication_date', 'asc');
+                $query->orderBy('created_at', 'asc');
                 break;
             case 'downloads':
                 $query->orderBy('download_count', 'desc');
@@ -187,16 +178,12 @@ class PublicationController extends Controller
             case 'alfabetica':
                 $query->orderBy('title', 'asc');
                 break;
-            default: // recentes
-                $query->orderBy('publication_date', 'desc');
+            default:
+                $query->orderBy('created_at', 'desc');
         }
 
-        $publications = $query->with(['user', 'publicationType'])->paginate(10);
+        $publications = $query->paginate(10)->withQueryString();
         $publicationTypes = PublicationType::all();
-
-        if ($request->ajax()) {
-            return view('publications._list', compact('publications'))->render();
-        }
 
         return view('publications.index', compact('publications', 'publicationTypes'));
     }

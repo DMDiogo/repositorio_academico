@@ -44,44 +44,51 @@
 
     <!-- Filtros -->
     <div class="bg-white shadow rounded-lg p-6 mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-                <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Publicação</label>
-                <select id="tipo" name="tipo" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
-                    <option value="">Todos os tipos</option>
-                    @foreach($publicationTypes as $type)
-                        <option value="{{ $type->id }}">{{ $type->name }}</option>
-                    @endforeach
-                </select>
+        <form action="{{ route('publications.index') }}" method="GET" id="filterForm">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Publicação</label>
+                    <select id="tipo" name="tipo" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
+                        <option value="">Todos os tipos</option>
+                        @foreach($publicationTypes as $type)
+                            <option value="{{ $type->id }}" {{ request('tipo') == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="ano" class="block text-sm font-medium text-gray-700 mb-1">Ano de Publicação</label>
+                    <select id="ano" name="ano" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
+                        <option value="">Todos os anos</option>
+                        @php
+                            $currentYear = date('Y');
+                            for($i = $currentYear; $i >= $currentYear - 5; $i--) {
+                                $selected = request('ano') == $i ? 'selected' : '';
+                                echo "<option value=\"$i\" $selected>$i</option>";
+                            }
+                        @endphp
+                        <option value="anterior" {{ request('ano') == 'anterior' ? 'selected' : '' }}>
+                            Anterior a {{ $currentYear - 5 }}
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ordenar" class="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
+                    <select id="ordenar" name="ordenar" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
+                        <option value="recentes" {{ request('ordenar') == 'recentes' ? 'selected' : '' }}>Mais recentes</option>
+                        <option value="antigos" {{ request('ordenar') == 'antigos' ? 'selected' : '' }}>Mais antigos</option>
+                        <option value="downloads" {{ request('ordenar') == 'downloads' ? 'selected' : '' }}>Mais baixados</option>
+                        <option value="alfabetica" {{ request('ordenar') == 'alfabetica' ? 'selected' : '' }}>Ordem alfabética</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label for="ano" class="block text-sm font-medium text-gray-700 mb-1">Ano de Publicação</label>
-                <select id="ano" name="ano" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
-                    <option value="">Todos os anos</option>
-                    @php
-                        $currentYear = date('Y');
-                        for($i = $currentYear; $i >= $currentYear - 5; $i--) {
-                            echo "<option value=\"$i\">$i</option>";
-                        }
-                    @endphp
-                    <option value="anterior">Anterior a {{ $currentYear - 5 }}</option>
-                </select>
+            <div class="mt-4 flex justify-end">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Aplicar Filtros
+                </button>
             </div>
-            <div>
-                <label for="ordenar" class="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
-                <select id="ordenar" name="ordenar" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm">
-                    <option value="recentes">Mais recentes</option>
-                    <option value="antigos">Mais antigos</option>
-                    <option value="downloads">Mais baixados</option>
-                    <option value="alfabetica">Ordem alfabética</option>
-                </select>
-            </div>
-        </div>
-        <div class="mt-4 flex justify-end">
-            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Aplicar Filtros
-            </button>
-        </div>
+        </form>
     </div>
 
     <!-- Lista de Publicações -->
