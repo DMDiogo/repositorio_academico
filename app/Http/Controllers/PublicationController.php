@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use FPDF; // Change this import
 use PhpOffice\PhpWord\IOFactory; // Para DOCX
+use App\Models\Download;
 
 class PublicationController extends Controller
 {
@@ -190,6 +191,14 @@ class PublicationController extends Controller
 
     public function download(Publication $publication)
     {
+        // Create download record
+        Download::create([
+            'user_id' => auth()->id(),
+            'publication_id' => $publication->id,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
+
         // Increment download count
         $publication->increment('download_count');
 

@@ -118,7 +118,7 @@
                             <span class="mt-1 block text-sm text-gray-500">Ver minhas publicações</span>
                         </a>
 
-                        <a href="#" class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <a href="{{ route('teacher.statistics') }}" class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
@@ -144,13 +144,17 @@
                                         <dt class="text-sm font-medium text-gray-500 truncate">
                                             @if(Auth::user()->isAdmin())
                                                 Total de Publicações
-                                            @else
+                                            @elseif(Auth::user()->isTeacher())
                                                 Suas Publicações
+                                            @else
+                                                Publicações do seu Curso
                                             @endif
                                         </dt>
                                         <dd class="flex items-baseline">
                                             <div class="text-2xl font-semibold text-gray-900">
-                                                {{ Auth::user()->isAdmin() ? \App\Models\Publication::count() : Auth::user()->publications()->count() }}
+                                                {{ Auth::user()->isAdmin() ? \App\Models\Publication::count() : 
+                                                   (Auth::user()->isTeacher() ? Auth::user()->publications()->count() : 
+                                                   \App\Models\Publication::where('course', Auth::user()->course)->count()) }}
                                             </div>
                                         </dd>
                                     </dl>
@@ -159,8 +163,13 @@
                         </div>
                         <div class="bg-blue-100 px-5 py-3">
                             <div class="text-sm">
-                                <a href="{{ route('publications.index') }}" class="font-medium text-blue-700 hover:text-blue-900">
-                                    Ver todas as publicações
+                                <a href="{{ route('publications.index', ['course' => Auth::user()->isStudent() ? Auth::user()->course : null]) }}" 
+                                   class="font-medium text-blue-700 hover:text-blue-900">
+                                    @if(Auth::user()->isStudent())
+                                        Ver publicações de {{ Auth::user()->course }}
+                                    @else
+                                        Ver todas as publicações
+                                    @endif
                                 </a>
                             </div>
                         </div>
@@ -180,16 +189,20 @@
                                         <dt class="text-sm font-medium text-gray-500 truncate">
                                             @if(Auth::user()->isAdmin())
                                                 Total de Usuários
+                                            @elseif(Auth::user()->isTeacher())
+                                                Downloads das suas Publicações
                                             @else
-                                                Total de Downloads
+                                                Seus Downloads
                                             @endif
                                         </dt>
                                         <dd class="flex items-baseline">
                                             <div class="text-2xl font-semibold text-gray-900">
                                                 @if(Auth::user()->isAdmin())
                                                     {{ \App\Models\User::count() }}
+                                                @elseif(Auth::user()->isTeacher())
+                                                    {{ \App\Models\Download::whereIn('publication_id', Auth::user()->publications->pluck('id'))->count() }}
                                                 @else
-                                                    0
+                                                    {{ \App\Models\Download::where('user_id', Auth::user()->id)->count() }}
                                                 @endif
                                             </div>
                                         </dd>
@@ -202,8 +215,10 @@
                                 <a href="#" class="font-medium text-green-700 hover:text-green-900">
                                     @if(Auth::user()->isAdmin())
                                         Ver todos os usuários
+                                    @elseif(Auth::user()->isTeacher())
+                                        Ver histórico de downloads
                                     @else
-                                        Ver estatísticas detalhadas
+                                        Ver seus downloads
                                     @endif
                                 </a>
                             </div>

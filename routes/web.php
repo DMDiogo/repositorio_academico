@@ -95,5 +95,7 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\CheckUserApproval::class]
     });
 
     Route::resource('publications', PublicationController::class);
+
+    Route::get('/teacher/statistics', [App\Http\Controllers\TeacherController::class, 'statistics'])->name('teacher.statistics');
 });
 
