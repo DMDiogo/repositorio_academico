@@ -69,6 +69,9 @@
                                 <div class="relative" x-data="{ open: false }">
                                     <button @click="open = !open" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none transition">
                                         <span>{{ Auth::user()->name }}</span>
+                                        @if(Auth::check() && Auth::user()->isStudent() && Auth::user()->course)
+                                            <div class="ml-1 text-sm text-gray-400">({{ Auth::user()->course }})</div>
+                                        @endif
                                         <svg class="ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         </svg>

@@ -44,70 +44,54 @@
             </div>
 
             <div class="mt-12 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                @php
-                    $hasPublicationsForCourse = false;
-                @endphp
-                
                 @forelse($recentPublications as $publication)
-                    @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->course === $publication->course))
-                        @php
-                            $hasPublicationsForCourse = true;
-                        @endphp
-                        <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
-                            <div class="p-6">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                            {{ $publication->course }}
-                                        </span>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-500">
-                                            Publicado em {{ $publication->created_at->format('d/m/Y') }}
-                                        </p>
+                    <div class="bg-white overflow-hidden shadow rounded-lg transition hover:shadow-lg">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                        {{ $publication->course }}
+                                    </span>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-500">
+                                        Publicado em {{ $publication->created_at->format('d/m/Y') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <a href="{{ route('publications.show', $publication) }}" class="block mt-4">
+                                <h3 class="text-xl font-semibold text-gray-900 line-clamp-2">
+                                    {{ $publication->title }}
+                                </h3>
+                                <p class="mt-3 text-base text-gray-500 line-clamp-3">
+                                    {{ $publication->abstract }}
+                                </p>
+                            </a>
+                            <div class="mt-6 flex items-center">
+                                <div class="flex-shrink-0">
+                                    <span class="sr-only">Autor</span>
+                                    <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+                                        {{ substr($publication->user->name, 0, 2) }}
                                     </div>
                                 </div>
-                                <a href="{{ route('publications.show', $publication) }}" class="block mt-4">
-                                    <h3 class="text-xl font-semibold text-gray-900 line-clamp-2">
-                                        {{ $publication->title }}
-                                    </h3>
-                                    <p class="mt-3 text-base text-gray-500 line-clamp-3">
-                                        {{ $publication->abstract }}
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {{ $publication->user->name }}
                                     </p>
-                                </a>
-                                <div class="mt-6 flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <span class="sr-only">Autor</span>
-                                        <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
-                                            {{ substr($publication->user->name, 0, 2) }}
-                                        </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-gray-900">
-                                            {{ $publication->user->name }}
-                                        </p>
-                                        <div class="flex space-x-1 text-sm text-gray-500">
-                                            <span>{{ $publication->file_type }}</span>
-                                            <span aria-hidden="true">&middot;</span>
-                                            <span>{{ $publication->page_count }} páginas</span>
-                                        </div>
+                                    <div class="flex space-x-1 text-sm text-gray-500">
+                                        <span>{{ $publication->file_type }}</span>
+                                        <span aria-hidden="true">&middot;</span>
+                                        <span>{{ $publication->page_count }} páginas</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 @empty
                     <div class="col-span-3 text-center py-12">
                         <p class="text-gray-500">Nenhuma publicação disponível no momento.</p>
                     </div>
                 @endforelse
-
-                @if(!$hasPublicationsForCourse && count($recentPublications) > 0)
-                    <div class="col-span-3 text-center py-12">
-                        <p class="text-gray-500">Ainda não há publicações disponíveis para o curso de <strong>{{ auth()->user()->course }}</strong>.</p>
-                        <p class="mt-2 text-sm text-gray-400">Novas publicações serão adicionadas em breve!</p>
-                    </div>
-                @endif
             </div>
 
             <div class="mt-12 text-center">
