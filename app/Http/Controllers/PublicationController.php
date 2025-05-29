@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Publication;
 use App\Models\PublicationType;
+use App\Models\KnowledgeArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -137,9 +138,16 @@ class PublicationController extends Controller
             return view('publications.show', compact('publication'));
         }
         
-        // Se for um aluno, só pode ver publicações do seu curso
-        if ($user->isStudent() && $user->course !== $publication->course) {
-            abort(403, 'Você não tem permissão para visualizar esta publicação.');
+        // Se for um aluno, verifica se tem curso definido
+        if ($user->isStudent()) {
+            if (!$user->course) {
+                abort(403, 'Você precisa ter um curso definido para visualizar publicações.');
+            }
+            
+            // Comparação case-insensitive dos cursos
+            if (strtolower($user->course) !== strtolower($publication->course)) {
+                abort(403, 'Você não tem permissão para visualizar esta publicação. Esta publicação é do curso ' . $publication->course . '.');
+            }
         }
         
         return view('publications.show', compact('publication'));
@@ -223,8 +231,9 @@ class PublicationController extends Controller
         }
 
         $publicationTypes = PublicationType::all();
+        $knowledgeAreas = KnowledgeArea::all();
 
-        return view('publications.edit', compact('publication', 'publicationTypes'));
+        return view('publications.edit', compact('publication', 'publicationTypes', 'knowledgeAreas'));
     }
 
     /**
@@ -240,26 +249,18 @@ class PublicationController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
-            'publication_date' => 'required|date',
             'knowledge_area_id' => 'required|exists:knowledge_areas,id',
             'publication_type_id' => 'required|exists:publication_types,id',
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
-            'page_count' => 'nullable|integer|min:1',
             'language' => 'required|string|max:10',
-            'doi' => 'nullable|string|max:255',
-            'issn' => 'nullable|string|max:255',
         ]);
 
         $publication->title = $validated['title'];
         $publication->slug = Str::slug($validated['title']);
         $publication->abstract = $validated['abstract'];
-        $publication->publication_date = $validated['publication_date'];
         $publication->knowledge_area_id = $validated['knowledge_area_id'];
         $publication->publication_type_id = $validated['publication_type_id'];
-        $publication->page_count = $validated['page_count'] ?? 0;
         $publication->language = $validated['language'];
-        $publication->doi = $validated['doi'];
-        $publication->issn = $validated['issn'];
 
         // Handle file upload if a new file is provided
         if ($request->hasFile('file')) {
@@ -294,6 +295,12 @@ class PublicationController extends Controller
 
         // Deletar o registro do banco de dados
         $publication->delete();
+
+        // Redirecionar baseado no tipo de usuário
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('publications.index')
+                ->with('success', 'Publicação excluída com sucesso!');
+        }
 
         return redirect()->route('my-publications')
             ->with('success', 'Publicação excluída com sucesso!');

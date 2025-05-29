@@ -82,28 +82,32 @@
 
                         <!-- Data de Publicação -->
                         <div class="sm:col-span-3">
-                            <label for="publication_date" class="block text-sm font-medium text-gray-700">Data de Publicação</label>
+                            <label for="publication_date" class="block text-sm font-medium text-gray-700">
+                                Data de Publicação
+                                <svg class="inline-block h-4 w-4 text-gray-400 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </label>
                             <div class="mt-1">
                                 <input type="date" name="publication_date" id="publication_date" 
-                                    value="{{ old('publication_date', $publication->publication_date->format('Y-m-d')) }}" required
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    value="{{ old('publication_date', $publication->publication_date->format('Y-m-d')) }}" readonly
+                                    class="shadow-sm bg-gray-100 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
-                            @error('publication_date')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- Número de Páginas -->
                         <div class="sm:col-span-3">
-                            <label for="page_count" class="block text-sm font-medium text-gray-700">Número de Páginas</label>
+                            <label for="page_count" class="block text-sm font-medium text-gray-700">
+                                Número de Páginas
+                                <svg class="inline-block h-4 w-4 text-gray-400 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </label>
                             <div class="mt-1">
                                 <input type="number" name="page_count" id="page_count" 
-                                    value="{{ old('page_count', $publication->page_count) }}" min="1"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    value="{{ old('page_count', $publication->page_count) }}" readonly
+                                    class="shadow-sm bg-gray-100 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
-                            @error('page_count')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- Idioma -->
@@ -124,26 +128,30 @@
 
                         <!-- DOI -->
                         <div class="sm:col-span-3">
-                            <label for="doi" class="block text-sm font-medium text-gray-700">DOI (opcional)</label>
+                            <label for="doi" class="block text-sm font-medium text-gray-700">
+                                DOI
+                                <svg class="inline-block h-4 w-4 text-gray-400 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </label>
                             <div class="mt-1">
-                                <input type="text" name="doi" id="doi" value="{{ old('doi', $publication->doi) }}"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <input type="text" name="doi" id="doi" value="{{ old('doi', $publication->doi) }}" readonly
+                                    class="shadow-sm bg-gray-100 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
-                            @error('doi')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- ISSN -->
                         <div class="sm:col-span-3">
-                            <label for="issn" class="block text-sm font-medium text-gray-700">ISSN (opcional)</label>
+                            <label for="issn" class="block text-sm font-medium text-gray-700">
+                                ISSN
+                                <svg class="inline-block h-4 w-4 text-gray-400 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </label>
                             <div class="mt-1">
-                                <input type="text" name="issn" id="issn" value="{{ old('issn', $publication->issn) }}"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                <input type="text" name="issn" id="issn" value="{{ old('issn', $publication->issn) }}" readonly
+                                    class="shadow-sm bg-gray-100 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
-                            @error('issn')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- Arquivo -->

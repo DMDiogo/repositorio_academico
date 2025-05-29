@@ -92,6 +92,7 @@ Route::middleware(['web', 'auth', \App\Http\Middleware\CheckUserApproval::class]
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::get('/admin/statistics', [App\Http\Controllers\AdminStatisticsController::class, 'index'])->name('admin.statistics');
     });
 
     Route::resource('publications', PublicationController::class);
