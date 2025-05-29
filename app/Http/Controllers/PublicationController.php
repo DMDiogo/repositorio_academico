@@ -162,6 +162,11 @@ class PublicationController extends Controller
             $query->where('course', auth()->user()->course);
         }
 
+        // Buscar por título
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
         // Filtrar por tipo de publicação
         if ($request->filled('tipo')) {
             $query->where('publication_type_id', $request->tipo);

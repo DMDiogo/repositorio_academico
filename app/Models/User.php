@@ -112,4 +112,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Publication::class);
     }
+
+    /**
+     * Get the downloads made by the user.
+     */
+    public function downloads()
+    {
+        return $this->hasMany(Download::class);
+    }
 }

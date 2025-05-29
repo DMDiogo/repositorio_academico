@@ -188,11 +188,16 @@
                                     <div class="flex text-sm text-gray-600">
                                         <label for="file" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                                             <span>Upload um arquivo</span>
-                                            <input id="file" name="file" type="file" class="sr-only" required accept=".pdf,.doc,.docx">
+                                            <input id="file" name="file" type="file" class="sr-only" required accept=".pdf,.doc,.docx" onchange="updateFileName(this)">
                                         </label>
                                         <p class="pl-1">ou arraste e solte</p>
                                     </div>
                                     <p class="text-xs text-gray-500">PDF, DOC ou DOCX até 10MB</p>
+                                    <!-- Novo elemento para mostrar o arquivo selecionado -->
+                                    <div id="selectedFile" class="hidden mt-2">
+                                        <p class="text-sm text-gray-600">Arquivo selecionado:</p>
+                                        <p id="fileName" class="text-sm font-medium text-blue-600"></p>
+                                    </div>
                                 </div>
                             </div>
                             @error('file')
@@ -216,5 +221,21 @@
         </form>
     </div>
 </div>
+
+<script>
+    function updateFileName(input) {
+        const selectedFileDiv = document.getElementById('selectedFile');
+        const fileNameElement = document.getElementById('fileName');
+        
+        if (input.files && input.files[0]) {
+            const fileName = input.files[0].name;
+            fileNameElement.textContent = fileName;
+            selectedFileDiv.classList.remove('hidden');
+        } else {
+            selectedFileDiv.classList.add('hidden');
+            fileNameElement.textContent = '';
+        }
+    }
+</script>
 
 @endsection

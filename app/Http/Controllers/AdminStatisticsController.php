@@ -12,9 +12,13 @@ class AdminStatisticsController extends Controller
     public function index()
     {
         // Total statistics
-        $totalUsers = User::count();
-        $totalTeachers = User::where('user_type', 'teacher')->count();
-        $totalStudents = User::where('user_type', 'student')->count();
+        $totalUsers = User::where('approval_status', '!=', 'rejected')->count();
+        $totalTeachers = User::where('user_type', 'teacher')
+            ->where('approval_status', '!=', 'rejected')
+            ->count();
+        $totalStudents = User::where('user_type', 'student')
+            ->where('approval_status', '!=', 'rejected')
+            ->count();
         $totalPublications = Publication::count();
         $totalDownloads = Download::count();
         

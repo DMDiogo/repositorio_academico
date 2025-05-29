@@ -172,23 +172,6 @@
                     </div>
                 </div>
 
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Palavras-chave</h3>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($publication->keywords as $keyword)
-                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            {{ $keyword->name }}
-                        </span>
-                        @endforeach
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">Citação</h3>
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <p class="text-sm text-gray-700">
-                            {{ $publication->citation }}
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
 
