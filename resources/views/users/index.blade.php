@@ -7,9 +7,6 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800">Gerenciamento de Usuários</h2>
-                    <a href="{{ route('users.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Novo Usuário
-                    </a>
                 </div>
 
                 @if(session('success'))

@@ -260,7 +260,7 @@
                         <div class="bg-purple-100 px-5 py-3">
                             <div class="text-sm">
                                 <a href="{{ url('/profile') }}" class="font-medium text-purple-700 hover:text-purple-900">
-                                    Editar perfil
+                                    Visualizar Perfil
                                 </a>
                             </div>
                         </div>
